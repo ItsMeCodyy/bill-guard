@@ -28,7 +28,7 @@
         <nav class="nav" aria-label="Preferences">
           <a class="nav-link" href="#settings" data-page="settings"><i data-icon="settings-2"></i>settings</a>
         </nav>
-        <div class="sidebar-note"><i data-icon="lock-keyhole"></i><span>your data stays in this browser</span></div>
+        <div class="sidebar-note"><i data-icon="lock-keyhole"></i><span><span id="storage-label">local mode · saved in this browser</span></span></div>
       </div>
     </aside>
 
@@ -39,7 +39,7 @@
           <span class="topbar-location" id="breadcrumb">overview</span>
         </div>
         <div class="topbar-right">
-          <span class="today-label" id="today-label"></span>
+          <span class="today-label" id="today-label"></span><button class="button button-secondary button-sm" id="account-button" type="button">sign in</button>
           <button class="button button-primary button-sm" data-open-add><i data-icon="plus"></i><span>add bill</span></button>
         </div>
       </header>
@@ -81,12 +81,12 @@
 
         <section class="page" id="page-settings">
           <div class="page-heading"><p class="eyebrow">MAKE IT YOURS</p><h1>settings<span class="accent">.</span></h1><p class="subtitle">simple controls for your workspace.</p></div>
-          <div class="settings-stack">
+          <div class="settings-stack"><div class="panel settings-panel"><div><h2>account & sync</h2><p id="account-status">sign in to sync bills across your devices.</p></div><button class="button button-secondary" id="settings-account" type="button">sign in</button></div>
             <div class="panel settings-panel"><div><h2>appearance</h2><p>pick the look you prefer.</p></div><select id="theme-select" class="select"><option value="light">light</option><option value="dark">dark</option><option value="system">system</option></select></div>
             <div class="panel settings-panel"><div><h2>currency</h2><p>used to display your bills. amounts are not converted.</p></div><select id="currency-select" class="select"><option value="USD">USD ($)</option><option value="EUR">EUR (€)</option><option value="GBP">GBP (£)</option><option value="CAD">CAD ($)</option><option value="AUD">AUD ($)</option></select></div>
             <div class="panel settings-panel"><div><h2>your data</h2><p>export a backup or import a previous billguard backup.</p></div><div class="settings-buttons"><button class="button button-secondary" id="export-data"><i data-icon="download"></i>export</button><button class="button button-secondary" id="import-data"><i data-icon="upload"></i>import</button><input type="file" id="import-file" accept="application/json,.json" hidden /></div></div>
             <div class="panel settings-panel"><div><h2>clear all data</h2><p>permanently delete all bills saved in this browser.</p></div><button class="button button-danger" id="clear-data">clear data</button></div>
-            <p class="settings-caption"><i data-icon="shield-check"></i> billguard stores information locally in your browser. it does not connect to your bank or send emails.</p>
+            <p class="settings-caption"><i data-icon="shield-check"></i> guest bills stay in this browser. signed-in bills sync privately to your account. no bank connection or reminder emails yet.</p>
           </div>
         </section>
       </main>
@@ -107,6 +107,23 @@
     </div>
   </div>
 
+  <div class="modal-backdrop" id="auth-modal" hidden>
+    <div class="modal auth-modal" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+      <div class="modal-head">
+        <div><p class="eyebrow">BILLGUARD ACCOUNT</p><h2 id="auth-title">welcome back.</h2></div>
+        <button class="icon-button" id="close-auth" aria-label="Close sign in"><i data-icon="x"></i></button>
+      </div>
+      <p class="auth-description" id="auth-description">sign in to sync bills across devices.</p>
+      <form id="auth-form">
+        <div class="field"><label for="auth-email">email</label><input id="auth-email" type="email" autocomplete="email" required placeholder="you@example.com" /></div>
+        <div class="field"><label for="auth-password">password</label><input id="auth-password" type="password" minlength="6" autocomplete="current-password" required placeholder="your password" /></div>
+        <p class="auth-error" id="auth-error" role="alert" hidden></p>
+        <button class="button button-primary auth-submit" id="auth-submit" type="submit">sign in</button>
+      </form>
+      <button class="auth-switch" id="auth-switch" type="button">new here? create an account</button>
+      <p class="auth-footnote">you can keep using billguard without an account.</p>
+    </div>
+  </div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </body>
 </html>
