@@ -41,7 +41,7 @@ function applyTheme() {
 
 function navigate() {
   const page = location.hash.slice(1) || 'overview';
-  const allowed = ['overview', 'subscriptions', 'calendar', 'insights', 'settings'];
+  const allowed = ['overview', 'subscriptions', 'calendar', 'insights', 'banks', 'settings'];
   const target = allowed.includes(page) ? page : 'overview';
   $$('.page').forEach((element) => element.classList.toggle('active', element.id === `page-${target}`));
   $$('.nav-link').forEach((element) => {
