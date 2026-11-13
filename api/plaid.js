@@ -28,7 +28,7 @@ function decrypt(value) {
 
 async function plaid(path, body) {
   const env = process.env.PLAID_ENV;
-  if (!['development', 'sandbox', 'production'].includes(env)) throw new Error('Plaid environment is invalid');
+  if (!['sandbox', 'production'].includes(env)) throw new Error('Plaid environment is invalid');
   const response = await fetch(`https://${env}.plaid.com${path}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -82,7 +82,7 @@ export default async function handler(req, res) {
       !process.env.SUPABASE_SECRET_KEY || !process.env.PLAID_TOKEN_ENCRYPTION_KEY) {
     return send(res, 503, { error: 'bank connections are not configured yet' });
   }
-  if (!['development', 'sandbox', 'production'].includes(process.env.PLAID_ENV)) {
+  if (!['sandbox', 'production'].includes(process.env.PLAID_ENV)) {
     return send(res, 503, { error: 'invalid Plaid environment' });
   }
   const origin = req.headers.origin;
