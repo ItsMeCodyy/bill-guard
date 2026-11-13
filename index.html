@@ -3,127 +3,92 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#f6f8fb" />
-  <meta name="description" content="billguard helps you stay ahead of recurring bills, subscriptions, and free trials." />
-  <title>billguard — know what's coming</title>
+  <meta name="theme-color" content="#ffffff" />
+  <meta name="description" content="BillGuard keeps your subscriptions, recurring bills, and free trials in one clear view." />
+  <title>billguard — bills without surprises</title>
   <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="./styles.css" />
-  <script src="./js/app.js" type="module"></script>
+  <link rel="stylesheet" href="./home.css" />
 </head>
 <body>
-  <div class="app-shell">
-    <aside class="sidebar" aria-label="Main navigation">
-      <a class="brand" href="#overview">
-        <span class="brand-mark" aria-hidden="true"><i data-icon="shield"></i></span>
-        <span>billguard<span class="brand-dot">.</span></span>
-      </a>
-      <div class="workspace-label">WORKSPACE</div>
-      <nav class="nav" aria-label="Pages">
-        <a class="nav-link active" href="#overview" data-page="overview"><i data-icon="layout-dashboard"></i>overview</a>
-        <a class="nav-link" href="#subscriptions" data-page="subscriptions"><i data-icon="credit-card"></i>subscriptions</a>
-        <a class="nav-link" href="#calendar" data-page="calendar"><i data-icon="calendar-days"></i>calendar</a>
-        <a class="nav-link" href="#insights" data-page="insights"><i data-icon="chart-no-axes-column"></i>insights</a>
+  <header>
+    <div class="wrap">
+      <a class="brand" href="/" aria-label="BillGuard home">billguard<span>.</span></a>
+      <nav aria-label="Main navigation">
+        <a href="#features">features</a>
+        <a href="#how-it-works">how it works</a>
+        <a class="btn primary" href="./app.html">open app <span aria-hidden="true">↗</span></a>
       </nav>
-      <div class="sidebar-bottom">
-        <nav class="nav" aria-label="Preferences">
-          <a class="nav-link" href="#settings" data-page="settings"><i data-icon="settings-2"></i>settings</a>
-        </nav>
-        <div class="sidebar-note"><i data-icon="lock-keyhole"></i><span><span id="storage-label">local mode · saved in this browser</span></span></div>
-      </div>
-    </aside>
-
-    <div class="main-area">
-      <header class="topbar">
-        <div class="topbar-left">
-          <button class="icon-button mobile-menu" id="menu-toggle" aria-label="Toggle navigation"><i data-icon="menu"></i></button>
-          <span class="topbar-location" id="breadcrumb">overview</span>
+    </div>
+  </header>
+  <main>
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <p class="kicker">a little clarity goes a long way</p>
+          <h1>your bills.<br />no <span>surprises.</span></h1>
+          <p class="lead">Subscriptions, free trials, and recurring payments. See what's coming before it hits your balance.</p>
+          <div class="actions">
+            <a class="btn primary" href="./app.html">get started <span aria-hidden="true">→</span></a>
+            <a class="btn secondary" href="#features">see how it works</a>
+          </div>
+          <p class="fine">free to start · no bank connection required</p>
         </div>
-        <div class="topbar-right">
-          <span class="today-label" id="today-label"></span><button class="button button-secondary button-sm" id="account-button" type="button">sign in</button>
-          <button class="button button-primary button-sm" data-open-add><i data-icon="plus"></i><span>add bill</span></button>
+        <div class="preview" aria-label="Illustration of the BillGuard dashboard with example data">
+          <div class="preview-top"><span>your overview</span><div class="dots" aria-hidden="true"><i></i><i></i><i></i></div></div>
+          <div class="preview-body">
+            <div class="preview-label">monthly recurring spending · example</div>
+            <div class="preview-number">$147.85 <small>estimated</small></div>
+            <div class="chart" aria-hidden="true">
+              <i style="height:38%"></i><i style="height:62%"></i><i style="height:88%"></i><i style="height:48%"></i>
+              <i style="height:74%"></i><i style="height:55%"></i><i style="height:100%"></i><i style="height:67%"></i>
+            </div>
+            <div class="preview-label">coming up next</div>
+            <div class="preview-row"><span class="avatar">N</span><span class="info">Netflix<small>nov 17 · monthly</small></span><strong>$15.49</strong></div>
+            <div class="preview-row"><span class="avatar">S</span><span class="info">Spotify<small>nov 20 · monthly</small></span><strong>$11.99</strong></div>
+            <div class="preview-row"><span class="avatar">A</span><span class="info">Adobe<small>nov 24 · monthly</small></span><strong>$22.99</strong></div>
+          </div>
         </div>
-      </header>
-
-      <main class="main-content">
-        <section class="page active" id="page-overview">
-          <div class="page-heading">
-            <div><p class="eyebrow">YOUR MONEY, IN VIEW</p><h1>good to see you<span class="accent">.</span></h1><p class="subtitle">a clearer picture of what's coming up.</p></div>
-          </div>
-          <div class="metrics">
-            <article class="metric-card"><div class="metric-label">monthly spending <i data-icon="wallet"></i></div><div class="metric-value" id="monthly-total">$0.00</div><div class="metric-foot">estimated recurring costs</div></article>
-            <article class="metric-card"><div class="metric-label">yearly estimate <i data-icon="chart-no-axes-column"></i></div><div class="metric-value" id="yearly-total">$0.00</div><div class="metric-foot">based on your current bills</div></article>
-            <article class="metric-card"><div class="metric-label">next 30 days <i data-icon="calendar-clock"></i></div><div class="metric-value" id="upcoming-total">$0.00</div><div class="metric-foot" id="upcoming-count">0 upcoming charges</div></article>
-            <article class="metric-card"><div class="metric-label">active subscriptions <i data-icon="layers-2"></i></div><div class="metric-value" id="active-total">0</div><div class="metric-foot" id="trial-count">0 free trials</div></article>
-          </div>
-          <div class="content-grid">
-            <section class="panel upcoming-panel"><div class="panel-head"><div><h2>up next</h2><p>bills due in the next 30 days</p></div><a href="#calendar" class="text-link">view calendar <i data-icon="arrow-up-right"></i></a></div><div id="upcoming-list" class="bill-list"></div></section>
-            <section class="panel overview-side"><div class="panel-head"><div><h2>spending breakdown</h2><p>where your money goes</p></div></div><div id="category-breakdown" class="breakdown"></div><div class="soft-note"><i data-icon="lightbulb"></i><span>little charges add up. keep an eye on the ones you rarely use.</span></div></section>
-          </div>
-          <section class="trial-banner" id="trial-banner" hidden><div class="trial-icon"><i data-icon="clock-alert"></i></div><div><strong>free trial ending soon</strong><p id="trial-banner-text"></p></div><a href="#subscriptions" class="text-link">review <i data-icon="arrow-right"></i></a></section>
-        </section>
-
-        <section class="page" id="page-subscriptions">
-          <div class="page-heading page-heading-row"><div><p class="eyebrow">EVERYTHING IN ONE PLACE</p><h1>subscriptions<span class="accent">.</span></h1><p class="subtitle">all your recurring bills, minus the guesswork.</p></div><button class="button button-primary" data-open-add><i data-icon="plus"></i>add a bill</button></div>
-          <div class="panel"><div class="toolbar"><div class="search"><i data-icon="search"></i><input id="bill-search" type="search" placeholder="search subscriptions" aria-label="Search subscriptions" /></div><div class="filter-row" id="status-filters"><button class="filter active" data-status="all">all</button><button class="filter" data-status="active">active</button><button class="filter" data-status="trial">trials</button><button class="filter" data-status="paused">paused</button></div></div><div class="table-wrap"><table class="data-table"><thead><tr><th>subscription</th><th>amount</th><th>next charge</th><th>status</th><th></th></tr></thead><tbody id="subscription-rows"></tbody></table></div></div>
-        </section>
-
-        <section class="page" id="page-calendar">
-          <div class="page-heading"><p class="eyebrow">STAY AHEAD</p><h1>calendar<span class="accent">.</span></h1><p class="subtitle">see your charges before they happen.</p></div>
-          <div class="panel calendar-panel"><div class="calendar-top"><h2 id="calendar-title"></h2><div class="calendar-actions"><button class="icon-button" id="previous-month" aria-label="Previous month"><i data-icon="chevron-left"></i></button><button class="button button-secondary button-sm" id="calendar-today">today</button><button class="icon-button" id="next-month" aria-label="Next month"><i data-icon="chevron-right"></i></button></div></div><div class="calendar-weekdays"><span>sun</span><span>mon</span><span>tue</span><span>wed</span><span>thu</span><span>fri</span><span>sat</span></div><div class="calendar-grid" id="calendar-grid"></div></div>
-          <div class="panel calendar-detail"><div class="panel-head"><h2 id="selected-day-title">selected day</h2></div><div id="selected-day-bills"></div></div>
-        </section>
-
-        <section class="page" id="page-insights">
-          <div class="page-heading"><p class="eyebrow">THE BIG PICTURE</p><h1>insights<span class="accent">.</span></h1><p class="subtitle">understand the small costs that become big ones.</p></div>
-          <div class="metrics insights-metrics"><article class="metric-card"><div class="metric-label">monthly equivalent</div><div class="metric-value" id="insights-monthly">$0.00</div></article><article class="metric-card"><div class="metric-label">annual projection</div><div class="metric-value" id="insights-yearly">$0.00</div></article><article class="metric-card"><div class="metric-label">most expensive</div><div class="metric-value small-value" id="insights-largest">—</div></article></div>
-          <div class="content-grid"><div class="panel"><div class="panel-head"><div><h2>cost by category</h2><p>monthly equivalent</p></div></div><div id="insights-categories"></div></div><div class="panel"><div class="panel-head"><div><h2>top subscriptions</h2><p>your biggest recurring costs</p></div></div><div id="insights-top" class="bill-list"></div></div></div>
-        </section>
-
-        <section class="page" id="page-settings">
-          <div class="page-heading"><p class="eyebrow">MAKE IT YOURS</p><h1>settings<span class="accent">.</span></h1><p class="subtitle">simple controls for your workspace.</p></div>
-          <div class="settings-stack"><div class="panel settings-panel"><div><h2>account & sync</h2><p id="account-status">sign in to sync bills across your devices.</p></div><button class="button button-secondary" id="settings-account" type="button">sign in</button></div>
-            <div class="panel settings-panel"><div><h2>appearance</h2><p>pick the look you prefer.</p></div><select id="theme-select" class="select"><option value="light">light</option><option value="dark">dark</option><option value="system">system</option></select></div>
-            <div class="panel settings-panel"><div><h2>currency</h2><p>used to display your bills. amounts are not converted.</p></div><select id="currency-select" class="select"><option value="USD">USD ($)</option><option value="EUR">EUR (€)</option><option value="GBP">GBP (£)</option><option value="CAD">CAD ($)</option><option value="AUD">AUD ($)</option></select></div>
-            <div class="panel settings-panel"><div><h2>your data</h2><p>export a backup or import a previous billguard backup.</p></div><div class="settings-buttons"><button class="button button-secondary" id="export-data"><i data-icon="download"></i>export</button><button class="button button-secondary" id="import-data"><i data-icon="upload"></i>import</button><input type="file" id="import-file" accept="application/json,.json" hidden /></div></div>
-            <div class="panel settings-panel"><div><h2>clear all data</h2><p>permanently delete all bills saved in this browser.</p></div><button class="button button-danger" id="clear-data">clear data</button></div>
-            <p class="settings-caption"><i data-icon="shield-check"></i> guest bills stay in this browser. signed-in bills sync privately to your account. no bank connection or reminder emails yet.</p>
-          </div>
-        </section>
-      </main>
-    </div>
-  </div>
-
-  <div class="modal-backdrop" id="bill-modal" hidden>
-    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-      <div class="modal-head"><div><p class="eyebrow">YOUR SUBSCRIPTIONS</p><h2 id="modal-title">add a bill</h2></div><button class="icon-button" id="close-modal" aria-label="Close"><i data-icon="x"></i></button></div>
-      <form id="bill-form">
-        <input type="hidden" name="id" />
-        <div class="field"><label for="bill-name">name</label><input id="bill-name" name="name" maxlength="80" placeholder="e.g. netflix" required /></div>
-        <div class="field-row"><div class="field"><label for="bill-amount">amount</label><input id="bill-amount" name="amount" type="number" min="0" max="1000000" step="0.01" placeholder="12.99" required /></div><div class="field"><label for="bill-cycle">billing cycle</label><select id="bill-cycle" name="cycle"><option value="monthly">monthly</option><option value="yearly">yearly</option><option value="weekly">weekly</option></select></div></div>
-        <div class="field-row"><div class="field"><label for="bill-date">next charge date</label><input id="bill-date" name="nextDate" type="date" required /></div><div class="field"><label for="bill-category">category</label><select id="bill-category" name="category"><option>entertainment</option><option>software</option><option>utilities</option><option>shopping</option><option>fitness</option><option>education</option><option>other</option></select></div></div>
-        <div class="field"><label for="bill-status">status</label><select id="bill-status" name="status"><option value="active">active</option><option value="trial">free trial</option><option value="paused">paused</option></select><small>for free trials, use the first paid charge date and amount.</small></div>
-        <div class="modal-actions"><button type="button" class="button button-secondary" id="cancel-modal">cancel</button><button class="button button-primary" type="submit">save bill <i data-icon="arrow-right"></i></button></div>
-      </form>
-    </div>
-  </div>
-
-  <div class="modal-backdrop" id="auth-modal" hidden>
-    <div class="modal auth-modal" role="dialog" aria-modal="true" aria-labelledby="auth-title">
-      <div class="modal-head">
-        <div><p class="eyebrow">BILLGUARD ACCOUNT</p><h2 id="auth-title">welcome back.</h2></div>
-        <button class="icon-button" id="close-auth" aria-label="Close sign in"><i data-icon="x"></i></button>
       </div>
-      <p class="auth-description" id="auth-description">sign in to sync bills across devices.</p>
-      <form id="auth-form">
-        <div class="field"><label for="auth-email">email</label><input id="auth-email" type="email" autocomplete="email" required placeholder="you@example.com" /></div>
-        <div class="field"><label for="auth-password">password</label><input id="auth-password" type="password" minlength="6" autocomplete="current-password" required placeholder="your password" /></div>
-        <p class="auth-error" id="auth-error" role="alert" hidden></p>
-        <button class="button button-primary auth-submit" id="auth-submit" type="submit">sign in</button>
-      </form>
-      <button class="auth-switch" id="auth-switch" type="button">new here? create an account</button>
-      <p class="auth-footnote">you can keep using billguard without an account.</p>
-    </div>
-  </div>
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    </section>
+    <section class="section" id="features">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="kicker">the essentials</p>
+          <h2>everything you need.<br />nothing you don't.</h2>
+          <p>One simple place to keep your recurring expenses organized.</p>
+        </div>
+        <div class="features">
+          <article class="feature">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18M8 15h3"/></svg>
+            <h3>know what's next</h3><p>See upcoming charges on a calendar before renewal day.</p>
+          </article>
+          <article class="feature">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18M7 15l4-4 3 2 5-7"/></svg>
+            <h3>see the bigger picture</h3><p>Understand your monthly and yearly recurring costs.</p>
+          </article>
+          <article class="feature">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v3"/></svg>
+            <h3>keep it private</h3><p>Use guest mode or sign in to sync bills privately across devices.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+    <section class="section soft" id="how-it-works">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="kicker">simple by design</p>
+          <h2>add it once.<br />stay in the know.</h2>
+          <p>Add a subscription, choose its renewal date and billing cycle, and BillGuard keeps your upcoming schedule and estimates organized. Automatic bank transaction detection isn't available yet.</p>
+          <a class="btn primary" href="./app.html">open your dashboard <span aria-hidden="true">→</span></a>
+        </div>
+      </div>
+    </section>
+    <section class="last">
+      <h2>make every charge<br />a choice.</h2>
+      <p>start tracking your subscriptions today.</p>
+      <a class="btn primary" href="./app.html">get started <span aria-hidden="true">→</span></a>
+    </section>
+  </main>
+  <footer><div class="wrap"><span>© 2026 billguard.</span><span>built for fewer surprises.</span></div></footer>
 </body>
 </html>
