@@ -1,4 +1,5 @@
 import { icon, hydrateIcons } from './icons.js';
+import { auth, fetchCloudBills, upsertCloudBill, deleteCloudBill, importCloudBills, clearCloudBills } from './cloud.js';
 import {
   getBills, saveBills, getSettings, saveSettings, validateBill,
   parseDate, dateKey, today, monthlyEquivalent, chargesBetween, nextDateFor, categories
@@ -12,6 +13,9 @@ let displayedMonth = new Date().getMonth();
 let displayedYear = new Date().getFullYear();
 let lastFocus = null;
 let toastTimer;
+let currentUser = null;
+let cloudReady = false;
+let authMode = 'signin';
 
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];
@@ -190,14 +194,18 @@ function closeModal() {
   lastFocus?.focus();
 }
 
-function handleSave(event) {
+async function handleSave(event) {
   event.preventDefault();
   const data = Object.fromEntries(new FormData(event.currentTarget));
   try {
     const bill = validateBill(data);
     const editing = bills.some((entry) => entry.id === bill.id);
+    if (currentUser) {
+      if (!cloudReady) throw new Error('cloud unavailable. try again later.');
+      await upsertCloudBill(bill, currentUser.id);
+    }
     bills = editing ? bills.map((entry) => entry.id === bill.id ? bill : entry) : [...bills, bill];
-    saveBills(bills);
+    if (!currentUser) saveBills(bills);
     closeModal();
     render();
     notify(editing ? 'bill updated' : 'bill added');
@@ -226,7 +234,13 @@ async function importBackup(event) {
     if (data.version !== 1 || !Array.isArray(data.bills) || data.bills.length > 5000) throw new Error('invalid backup file');
     const incoming = data.bills.map(validateBill);
     if (!confirm(`replace your ${bills.length} current bill(s) with ${incoming.length} from this backup?`)) return;
-    saveBills(incoming);
+    if (currentUser) {
+      if (!cloudReady) throw new Error('cloud unavailable');
+      await importCloudBills(incoming, currentUser.id);
+      for (const old of bills) {
+        if (!incoming.some((item) => item.id === old.id)) await deleteCloudBill(old.id, currentUser.id);
+      }
+    } else saveBills(incoming);
     bills = incoming;
     if (data.settings && typeof data.settings === 'object') {
       settings = {
@@ -261,17 +275,23 @@ $('#status-filters').addEventListener('click', (event) => {
   $$('.filter').forEach((element) => element.classList.toggle('active', element === button));
   renderSubscriptions();
 });
-$('#subscription-rows').addEventListener('click', (event) => {
+$('#subscription-rows').addEventListener('click', async (event) => {
   const edit = event.target.closest('[data-edit]');
   const del = event.target.closest('[data-delete]');
   if (edit) openModal(bills.find((bill) => bill.id === edit.dataset.edit));
   if (del) {
     const bill = bills.find((item) => item.id === del.dataset.delete);
     if (bill && confirm(`remove ${bill.name}?`)) {
-      bills = bills.filter((item) => item.id !== bill.id);
-      saveBills(bills);
-      render();
-      notify('bill removed');
+      try {
+        if (currentUser) {
+          if (!cloudReady) throw new Error('cloud unavailable');
+          await deleteCloudBill(bill.id, currentUser.id);
+        }
+        bills = bills.filter((item) => item.id !== bill.id);
+        if (!currentUser) saveBills(bills);
+        render();
+        notify('bill removed');
+      } catch (error) { notify(error.message); }
     }
   }
 });
@@ -317,17 +337,23 @@ $('#currency-select').addEventListener('change', (event) => {
 $('#export-data').addEventListener('click', downloadBackup);
 $('#import-data').addEventListener('click', () => $('#import-file').click());
 $('#import-file').addEventListener('change', importBackup);
-$('#clear-data').addEventListener('click', () => {
-  if (!confirm('delete all saved bills from this browser? this cannot be undone.')) return;
-  bills = [];
-  saveBills(bills);
-  render();
-  notify('all bills cleared');
+$('#clear-data').addEventListener('click', async () => {
+  if (!confirm(currentUser ? 'delete all bills from your cloud account? this cannot be undone.' : 'delete all local bills? this cannot be undone.')) return;
+  try {
+    if (currentUser) {
+      if (!cloudReady) throw new Error('cloud unavailable');
+      await clearCloudBills(currentUser.id);
+    } else saveBills([]);
+    bills = [];
+    render();
+    notify('all bills cleared');
+  } catch (error) { notify(error.message); }
 });
 $('#menu-toggle').addEventListener('click', () => document.body.classList.toggle('menu-open'));
 document.addEventListener('keydown', (event) => {
   if (event.key === 'Escape') {
     if (!$('#bill-modal').hidden) closeModal();
+    if (!$('#auth-modal').hidden) closeAuth();
     document.body.classList.remove('menu-open');
   }
   if (event.key === 'Tab' && !$('#bill-modal').hidden) {
@@ -341,3 +367,131 @@ document.addEventListener('keydown', (event) => {
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
 window.addEventListener('hashchange', navigate);
 navigate();
+
+function updateAccountUI() {
+  $('#account-button').textContent = currentUser ? 'account' : 'sign in';
+  $('#settings-account').textContent = currentUser ? 'sign out' : 'sign in';
+  $('#account-status').textContent = currentUser
+    ? `${currentUser.email} · ${cloudReady ? 'cloud sync on' : 'sync unavailable'}`
+    : 'sign in to sync bills across your devices.';
+  $('#storage-label').textContent = currentUser
+    ? (cloudReady ? 'private cloud sync enabled' : 'cloud unavailable')
+    : 'local mode · saved in this browser';
+}
+
+function closeAuth() {
+  $('#auth-modal').hidden = true;
+}
+
+function updateAuthMode() {
+  const signup = authMode === 'signup';
+  $('#auth-title').textContent = signup ? 'create an account.' : 'welcome back.';
+  $('#auth-description').textContent = signup
+    ? 'create an account to sync your subscriptions.'
+    : 'sign in to keep your bills synced across devices.';
+  $('#auth-submit').textContent = signup ? 'create account' : 'sign in';
+  $('#auth-switch').textContent = signup ? 'already have an account? sign in' : 'new here? create an account';
+  $('#auth-password').autocomplete = signup ? 'new-password' : 'current-password';
+  $('#auth-error').hidden = true;
+}
+
+function openAuth() {
+  authMode = 'signin';
+  updateAuthMode();
+  $('#auth-form').reset();
+  $('#auth-modal').hidden = false;
+  $('#auth-email').focus();
+}
+
+async function syncSession(user) {
+  currentUser = user;
+  cloudReady = false;
+  updateAccountUI();
+  if (!user) {
+    bills = getBills();
+    render();
+    return;
+  }
+  try {
+    bills = await fetchCloudBills(user.id);
+    if (currentUser?.id !== user.id) return;
+    cloudReady = true;
+    updateAccountUI();
+    render();
+    const local = getBills();
+    if (local.length && !sessionStorage.getItem(`billguard.skip.${user.id}`)) {
+      if (confirm(`copy ${local.length} locally saved bill(s) into your account? existing cloud bills will be kept.`)) {
+        await importCloudBills(local, user.id);
+        if (currentUser?.id !== user.id) return;
+        bills = await fetchCloudBills(user.id);
+        saveBills([]);
+        render();
+        notify('local bills copied to cloud');
+      } else sessionStorage.setItem(`billguard.skip.${user.id}`, '1');
+    }
+  } catch (error) {
+    cloudReady = false;
+    bills = [];
+    updateAccountUI();
+    render();
+    notify('could not load cloud bills. please try again.');
+  }
+}
+
+$('#account-button').addEventListener('click', () => {
+  if (currentUser) location.hash = 'settings';
+  else openAuth();
+});
+$('#settings-account').addEventListener('click', async () => {
+  if (!currentUser) return openAuth();
+  const { error } = await auth.signOut();
+  if (error) return notify(error.message);
+  await syncSession(null);
+  notify('signed out');
+});
+$('#close-auth').addEventListener('click', closeAuth);
+$('#auth-modal').addEventListener('click', (event) => {
+  if (event.target.id === 'auth-modal') closeAuth();
+});
+$('#auth-switch').addEventListener('click', () => {
+  authMode = authMode === 'signin' ? 'signup' : 'signin';
+  updateAuthMode();
+});
+$('#auth-form').addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const button = $('#auth-submit');
+  if (button.disabled) return;
+  button.disabled = true;
+  const email = $('#auth-email').value.trim();
+  const password = $('#auth-password').value;
+  try {
+    const { data, error } = authMode === 'signup'
+      ? await auth.signUp({ email, password, options: { emailRedirectTo: location.origin + location.pathname } })
+      : await auth.signInWithPassword({ email, password });
+    if (error) throw error;
+    if (data.session) {
+      closeAuth();
+      await syncSession(data.user);
+      notify('signed in');
+    } else {
+      $('#auth-error').hidden = false;
+      $('#auth-error').textContent = 'check your email to confirm your account, then sign in.';
+    }
+  } catch (error) {
+    $('#auth-error').hidden = false;
+    $('#auth-error').textContent = error.message || 'could not sign in';
+  } finally {
+    button.disabled = false;
+  }
+});
+
+auth.onAuthStateChange((event, session) => {
+  if (event === 'SIGNED_OUT') queueMicrotask(() => syncSession(null));
+  if (event === 'SIGNED_IN' && session?.user && session.user.id !== currentUser?.id) {
+    queueMicrotask(() => syncSession(session.user));
+  }
+});
+auth.getUser().then(({ data }) => {
+  if (data?.user && data.user.id !== currentUser?.id) syncSession(data.user);
+  else if (!data?.user) updateAccountUI();
+}).catch(() => updateAccountUI());
