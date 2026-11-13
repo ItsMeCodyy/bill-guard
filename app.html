@@ -26,6 +26,7 @@
       </nav>
       <div class="sidebar-bottom">
         <nav class="nav" aria-label="Preferences">
+          <a class="nav-link" href="#banks" data-page="banks"><i data-icon="landmark"></i>bank accounts</a>
           <a class="nav-link" href="#settings" data-page="settings"><i data-icon="settings-2"></i>settings</a>
         </nav>
         <div class="sidebar-note"><i data-icon="lock-keyhole"></i><span><span id="storage-label">local mode · saved in this browser</span></span></div>
@@ -77,6 +78,25 @@
           <div class="page-heading"><p class="eyebrow">THE BIG PICTURE</p><h1>insights<span class="accent">.</span></h1><p class="subtitle">understand the small costs that become big ones.</p></div>
           <div class="metrics insights-metrics"><article class="metric-card"><div class="metric-label">monthly equivalent</div><div class="metric-value" id="insights-monthly">$0.00</div></article><article class="metric-card"><div class="metric-label">annual projection</div><div class="metric-value" id="insights-yearly">$0.00</div></article><article class="metric-card"><div class="metric-label">most expensive</div><div class="metric-value small-value" id="insights-largest">—</div></article></div>
           <div class="content-grid"><div class="panel"><div class="panel-head"><div><h2>cost by category</h2><p>monthly equivalent</p></div></div><div id="insights-categories"></div></div><div class="panel"><div class="panel-head"><div><h2>top subscriptions</h2><p>your biggest recurring costs</p></div></div><div id="insights-top" class="bill-list"></div></div></div>
+        </section>
+
+        <section class="page" id="page-banks">
+          <div class="page-heading page-heading-row">
+            <div>
+              <p class="eyebrow">CONNECTED ACCOUNTS</p>
+              <h1>bank accounts<span class="accent">.</span></h1>
+              <p class="subtitle">connect securely with plaid. no passwords are stored by billguard.</p>
+            </div>
+            <button class="button button-primary" id="connect-bank" type="button"><i data-icon="plus"></i>connect bank</button>
+          </div>
+          <div class="panel">
+            <div class="panel-head">
+              <div><h2>your connections</h2><p>read-only access · disconnect anytime</p></div>
+            </div>
+            <div id="bank-status" class="bank-status">sign in to connect a bank account.</div>
+            <div id="bank-connections" class="bank-connections"></div>
+            <p class="bank-disclaimer">Bank connections use Plaid. Supported institutions and data vary. PayPal and Cash App aren't guaranteed to be available. BillGuard does not move money.</p>
+          </div>
         </section>
 
         <section class="page" id="page-settings">
