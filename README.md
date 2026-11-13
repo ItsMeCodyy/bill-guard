@@ -14,7 +14,10 @@ billguard is a clean, simple subscription and recurring-bill tracker. know how m
 - search, edit, pause, and delete bills
 - light and dark mode
 - JSON backup and restore
-- local-first storage — no account required
+- guest mode with local storage (no account required)
+- email sign-up and login with Supabase
+- private cross-device cloud sync for signed-in users
+- optional import of locally saved bills into an account
 
 ## run locally
 
@@ -34,7 +37,7 @@ You can also deploy the repo as a **static site** on Vercel, Netlify, or GitHub 
 
 Each subscription has an amount, billing cycle, next charge date, category, and status. The dashboard calculates monthly equivalents and shows charges in the next 30 days. The calendar shows recurring charges based on each bill's date.
 
-Bills are stored in your browser's `localStorage`. Export your data before clearing your browser or switching devices. This is **not** cloud sync and does not send reminders. Free trial dates are only shown in the app.
+Guest bills are stored in browser `localStorage`. Signed-in users store bills in Supabase under per-user row-level security. The app offers to copy existing guest bills into an account on sign-in. If cloud access fails, cloud edits are blocked rather than silently saved locally. Export backups before clearing your browser. Reminder emails are not implemented yet.
 
 No bank connections or real payments are made. This tool does not automatically detect or cancel subscriptions.
 
@@ -47,6 +50,7 @@ bill-guard/
 ├── js/
 │   ├── app.js
 │   ├── bills.js
+│   ├── cloud.js
 │   └── icons.js
 ├── index.html
 ├── styles.css
@@ -55,7 +59,7 @@ bill-guard/
 
 ## next
 
-Cloud accounts, scheduled email reminders, multi-currency handling, and consent-based financial integrations are future additions.
+Scheduled email reminders, multi-currency conversion, and consent-based financial integrations are future additions.\n\n## supabase setup\n\nProject: `zvskbtdhsgwizchjmrpw` (US East). Configure **Authentication → URL Configuration** to set the Site URL to your deployed site and add the exact production and local development redirect URLs (such as `http://localhost:8000/**`). Email confirmation is normally required for sign-up. Configure custom SMTP for production use and review rate limits.\n\n`js/cloud.js` contains only a public publishable key; never add a service-role or secret key to the website. Supabase JS is pinned and loaded via esm.sh. The `public.bills` table has row-level security and owner-only read/write policies.\n\nNo bank connection, payment handling, or automated cancellation is included.
 
 ---
 
